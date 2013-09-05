@@ -79,14 +79,13 @@
 # [*passenger_rack_base_uri*]
 #   Set the RackBaseURI directive
 #
-# [*directory*]
-#   Set the VHost directory used for the <Directory> directive
-#
-# [*directory_options*]
-#   Set the directory's Options
-#
-# [*directory_allow_override*]
-#   Set the directory's override configuration
+# [*directoryconfig*]
+#   Hash or Array with a single or multiple Directory configuration.
+#   Keys:
+#     - directory: Set the VHost directory used for the <Directory> directive
+#     - options: Set the directory's Options
+#     - allow_override: Set the directory's override configuration
+#     - allow: "Allow from all" or "Deny from all"
 #
 # [*aliases*]
 #   Set one or more Alias directives (e.g '/phpmyadmin /usr/share/phpMyAdmin'
@@ -140,10 +139,8 @@ define apache::vhost (
   $passenger_rack_env           = '',
   $passenger_rack_base_uri      = '',
   $enable                       = true,
-  $directory                    = '',
-  $directory_options            = '',
-  $directory_allow_override     = 'None',
-  $aliases                      = ''
+  $directoryconfig              = '',
+  $aliases			= ''
 ) {
 
   $ensure = $enable ? {
@@ -160,11 +157,6 @@ define apache::vhost (
   $real_docroot = $docroot ? {
     ''      => "${apache::data_dir}/${name}",
     default => $docroot,
-  }
-
-  $real_directory = $directory ? {
-    ''      => $apache::data_dir,
-    default => $directory,
   }
 
   $server_name_value = $server_name ? {
